@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolveMaster – We Solve Real Digital Problems</title>
+
+    <style>
+        /* RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: .3s;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --text: #111;
+            --card: #f5f5f5;
+            --accent: #4b6bfb;
+        }
+
+        body.dark {
+            --bg: #111;
+            --text: #f5f5f5;
+            --card: #1e1e1e;
+            --accent: #9bb3ff;
+        }
+
+        /* NAVBAR */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        nav button {
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 6px;
+        }
+
+        /* HERO */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: .8;
+        }
+
+        .hero .cta {
+            padding: 12px 25px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* CATEGORIES GRID */
+        .categories {
+            padding: 40px 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .categories h2 {
+            margin-bottom: 20px;
+            font-size: 26px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            font-size: 14px;
+            opacity: .7;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">SolveMaster</div>
+        <button id="themeToggle">Dark Mode</button>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <h1>We Solve Real Digital Problems.</h1>
+        <p>Watch step-by-step videos that fix daily business, tech, and digital-life issues instantly.</p>
+        <button class="cta">Explore Problems</button>
+    </div>
+
+    <!-- CATEGORIES SECTION -->
+    <div class="categories">
+        <h2>Popular Problem Categories</h2>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Business Fixes</h3>
+                <p>Branding, pricing sheets, online payments, simple websites.</p>
+            </div>
+
+            <div class="card">
+                <h3>Digital Life Fixes</h3>
+                <p>Phone storage, backups, lost passwords, privacy fixes.</p>
+            </div>
+
+            <div class="card">
+                <h3>Tech Setup Fixes</h3>
+                <p>Hosting, domain DNS, email issues, device syncing.</p>
+            </div>
+
+            <div class="card">
+                <h3>Creators & Workflow</h3>
+                <p>Editing workflow, thumbnails, file structure, automations.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        const toggleBtn = document.getElementById("themeToggle");
+
+        toggleBtn.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+
+            toggleBtn.textContent = 
+                document.body.classList.contains("dark")
+                ? "Light Mode"
+                : "Dark Mode";
+        });
+    </script>
+
+</body>
+</html>
