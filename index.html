@@ -1,184 +1,232 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SolveMaster – We Solve Real Digital Problems</title>
+import React, {useRef, useState, useEffect} from 'react';
 
-    <style>
-        /* RESET */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+/**
+ * ResponsiveVideoPlayer.jsx
+ * Default-exported React component (single-file) that attempts to play a video from a provided URL.
+ * - If the URL points to a direct video file (mp4, webm, ogg), it uses a native <video> element with rich controls.
+ * - Otherwise it falls back to an iframe embed (Facebook/YouTube/etc) using a best-effort embed URL.
+ * - Supports optional JSON config (pass configUrl) to supply settings like poster, autoplay, muted, loop.
+ * - Exposes methods: play/pause, toggleMute, enterFullscreen, requestPIP.
+ *
+ * Usage example:
+ * <ResponsiveVideoPlayer
+ *    videoUrl="https://example.com/video.mp4"
+ *    poster="/images/thumb.jpg"
+ *    captionsUrl="/subs/en.vtt"
+ *    configUrl="/player-config.json"
+ *    className="max-w-3xl mx-auto"
+ * />
+ *
+ * Notes:
+ * - Facebook video "share" pages are not direct mp4 links. The component will try to embed using
+ *   the Facebook Video plugin (iframe) if the URL is not a direct file.
+ * - If you want every video source to be treated as a direct stream, provide a direct file link or HLS manifest.
+ */
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            transition: .3s;
-        }
+// Utility helpers
+const isDirectVideoFile = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url) || /\.m3u8(\?.*)?$/i.test(url);
+};
 
-        :root {
-            --bg: #ffffff;
-            --text: #111;
-            --card: #f5f5f5;
-            --accent: #4b6bfb;
-        }
+const makeFacebookEmbed = (url, width = 560) => {
+  const href = encodeURIComponent(url);
+  return `https://www.facebook.com/plugins/video.php?href=${href}&show_text=0&width=${width}`;
+};
 
-        body.dark {
-            --bg: #111;
-            --text: #f5f5f5;
-            --card: #1e1e1e;
-            --accent: #9bb3ff;
-        }
+export default function ResponsiveVideoPlayer({
+  videoUrl,
+  poster = '',
+  captionsUrl = '',
+  configUrl = '',
+  className = '',
+  preload = 'metadata',
+  controls = true,
+}) {
+  const videoRef = useRef(null);
+  const containerRef = useRef(null);
+  const [isDirect, setIsDirect] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [autoplay, setAutoplay] = useState(false);
+  const [loop, setLoop] = useState(false);
+  const [fetchedConfig, setFetchedConfig] = useState(null);
 
-        /* NAVBAR */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
-            align-items: center;
-        }
+  useEffect(() => {
+    setIsDirect(isDirectVideoFile(videoUrl));
+  }, [videoUrl]);
 
-        nav .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent);
-        }
+  // Optionally fetch a JSON config at runtime (e.g. from a JSON file you host)
+  useEffect(() => {
+    let mounted = true;
+    if (!configUrl) return;
+    fetch(configUrl)
+      .then((r) => r.json())
+      .then((json) => {
+        if (!mounted) return;
+        setFetchedConfig(json);
+        if (json.autoplay) setAutoplay(Boolean(json.autoplay));
+        if (json.loop) setLoop(Boolean(json.loop));
+        if (typeof json.muted !== 'undefined') setMuted(Boolean(json.muted));
+      })
+      .catch(() => {
+        // ignore errors silently — config is optional
+      });
+    return () => (mounted = false);
+  }, [configUrl]);
 
-        nav button {
-            padding: 8px 15px;
-            border: none;
-            cursor: pointer;
-            background: var(--accent);
-            color: #fff;
-            border-radius: 6px;
-        }
+  // Playback state synchronization
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    v.addEventListener('play', onPlay);
+    v.addEventListener('pause', onPause);
+    return () => {
+      v.removeEventListener('play', onPlay);
+      v.removeEventListener('pause', onPause);
+    };
+  }, []);
 
-        /* HERO */
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-            max-width: 700px;
-            margin: auto;
-        }
+  // Controls API
+  const togglePlay = async () => {
+    const v = videoRef.current;
+    if (!v) return;
+    try {
+      if (v.paused) await v.play();
+      else v.pause();
+    } catch (e) {
+      // autoplay policy might block play — ignore
+    }
+  };
 
-        .hero h1 {
-            font-size: 42px;
-            margin-bottom: 20px;
-        }
+  const toggleMute = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    setMuted(v.muted);
+  };
 
-        .hero p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: .8;
-        }
+  const enterFullscreen = async () => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (el.requestFullscreen) await el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+  };
 
-        .hero .cta {
-            padding: 12px 25px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+  const requestPIP = async () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (document.pictureInPictureEnabled && !v.disablePictureInPicture) {
+      try {
+        if (v !== document.pictureInPictureElement) await v.requestPictureInPicture();
+        else await document.exitPictureInPicture();
+      } catch (e) {
+        // ignore
+      }
+    }
+  };
 
-        /* CATEGORIES GRID */
-        .categories {
-            padding: 40px 20px;
-            max-width: 1000px;
-            margin: auto;
-        }
+  // Build embed fallback (iframe) — best-effort for Facebook, YouTube and generic.
+  const getIframeSrc = (url) => {
+    if (!url) return '';
+    try {
+      const host = new URL(url).hostname.toLowerCase();
+      if (host.includes('facebook.com')) return makeFacebookEmbed(url, 560);
+      if (host.includes('youtube.com') || host.includes('youtu.be')) {
+        // allow YouTube watch URL or short url — convert to embed
+        // extract video id
+        const idMatch = url.match(/(v=|\/)([A-Za-z0-9_-]{6,})/);
+        const vid = idMatch ? idMatch[2] : null;
+        if (vid) return `https://www.youtube.com/embed/${vid}`;
+      }
+      // generic fallback: just load the page in an iframe (may be blocked by X-Frame-Options)
+      return url;
+    } catch (e) {
+      return url;
+    }
+  };
 
-        .categories h2 {
-            margin-bottom: 20px;
-            font-size: 26px;
-        }
+  return (
+    <div ref={containerRef} className={`video-player-root ${className}`}> 
+      <div className="relative bg-black rounded-2xl overflow-hidden shadow-lg">
+        {/* Native player when direct file */}
+        {isDirect ? (
+          <div className="w-full aspect-video bg-black relative">
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              poster={poster || (fetchedConfig && fetchedConfig.poster) || ''}
+              preload={preload}
+              controls={controls}
+              autoPlay={autoplay}
+              muted={muted}
+              loop={loop}
+              className="w-full h-full object-contain"
+            >
+              {captionsUrl && (
+                <track src={captionsUrl} kind="subtitles" srcLang="en" label="English" default />
+              )}
+              Sorry — your browser does not support the video element.
+            </video>
 
-        .grid {
-            display: grid;
-            gap: 20px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
-
-        .card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card h3 {
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        .card p {
-            font-size: 14px;
-            opacity: .7;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- NAVBAR -->
-    <nav>
-        <div class="logo">SolveMaster</div>
-        <button id="themeToggle">Dark Mode</button>
-    </nav>
-
-    <!-- HERO SECTION -->
-    <div class="hero">
-        <h1>We Solve Real Digital Problems.</h1>
-        <p>Watch step-by-step videos that fix daily business, tech, and digital-life issues instantly.</p>
-        <button class="cta">Explore Problems</button>
-    </div>
-
-    <!-- CATEGORIES SECTION -->
-    <div class="categories">
-        <h2>Popular Problem Categories</h2>
-
-        <div class="grid">
-            <div class="card">
-                <h3>Business Fixes</h3>
-                <p>Branding, pricing sheets, online payments, simple websites.</p>
+            {/* custom minimal control bar (overlay) */}
+            <div className="absolute left-3 bottom-3 flex items-center gap-3">
+              <button
+                onClick={togglePlay}
+                className="px-3 py-1 rounded-md bg-black/40 backdrop-blur text-sm"
+                aria-label="Play / Pause"
+              >
+                {isPlaying ? 'Pause' : 'Play'}
+              </button>
+              <button
+                onClick={toggleMute}
+                className="px-3 py-1 rounded-md bg-black/40 text-sm"
+                aria-label="Mute toggle"
+              >
+                {muted ? 'Unmute' : 'Mute'}
+              </button>
+              <button
+                onClick={requestPIP}
+                className="px-3 py-1 rounded-md bg-black/40 text-sm"
+                aria-label="Picture-in-Picture"
+              >
+                PIP
+              </button>
+              <button
+                onClick={enterFullscreen}
+                className="px-3 py-1 rounded-md bg-black/40 text-sm"
+                aria-label="Fullscreen"
+              >
+                Full
+              </button>
             </div>
+          </div>
+        ) : (
+          // Fallback to iframe embed
+          <div className="w-full aspect-video bg-black flex items-center justify-center">
+            <iframe
+              title="embedded-video"
+              src={getIframeSrc(videoUrl)}
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        )}
+      </div>
 
-            <div class="card">
-                <h3>Digital Life Fixes</h3>
-                <p>Phone storage, backups, lost passwords, privacy fixes.</p>
-            </div>
-
-            <div class="card">
-                <h3>Tech Setup Fixes</h3>
-                <p>Hosting, domain DNS, email issues, device syncing.</p>
-            </div>
-
-            <div class="card">
-                <h3>Creators & Workflow</h3>
-                <p>Editing workflow, thumbnails, file structure, automations.</p>
-            </div>
+      {/* small meta area */}
+      <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
+        <div>Source: <span className="text-slate-700">{videoUrl}</span></div>
+        <div className="flex items-center gap-2">
+          {configUrl && <div className="px-2 py-1 rounded bg-slate-100 text-xs">Config: {configUrl}</div>}
+          <div className="px-2 py-1 rounded bg-slate-100 text-xs">Direct file: {isDirect ? 'yes' : 'no'}</div>
         </div>
+      </div>
+
     </div>
-
-    <script>
-        // Dark Mode Toggle
-        const toggleBtn = document.getElementById("themeToggle");
-
-        toggleBtn.addEventListener("click", () => {
-            document.body.classList.toggle("dark");
-
-            toggleBtn.textContent = 
-                document.body.classList.contains("dark")
-                ? "Light Mode"
-                : "Dark Mode";
-        });
-    </script>
-
-</body>
-</html>
+  );
+}
