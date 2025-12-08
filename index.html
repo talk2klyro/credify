@@ -1,232 +1,108 @@
-import React, {useRef, useState, useEffect} from 'react';
-
-/**
- * ResponsiveVideoPlayer.jsx
- * Default-exported React component (single-file) that attempts to play a video from a provided URL.
- * - If the URL points to a direct video file (mp4, webm, ogg), it uses a native <video> element with rich controls.
- * - Otherwise it falls back to an iframe embed (Facebook/YouTube/etc) using a best-effort embed URL.
- * - Supports optional JSON config (pass configUrl) to supply settings like poster, autoplay, muted, loop.
- * - Exposes methods: play/pause, toggleMute, enterFullscreen, requestPIP.
- *
- * Usage example:
- * <ResponsiveVideoPlayer
- *    videoUrl="https://example.com/video.mp4"
- *    poster="/images/thumb.jpg"
- *    captionsUrl="/subs/en.vtt"
- *    configUrl="/player-config.json"
- *    className="max-w-3xl mx-auto"
- * />
- *
- * Notes:
- * - Facebook video "share" pages are not direct mp4 links. The component will try to embed using
- *   the Facebook Video plugin (iframe) if the URL is not a direct file.
- * - If you want every video source to be treated as a direct stream, provide a direct file link or HLS manifest.
- */
-
-// Utility helpers
-const isDirectVideoFile = (url) => {
-  if (!url || typeof url !== 'string') return false;
-  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url) || /\.m3u8(\?.*)?$/i.test(url);
-};
-
-const makeFacebookEmbed = (url, width = 560) => {
-  const href = encodeURIComponent(url);
-  return `https://www.facebook.com/plugins/video.php?href=${href}&show_text=0&width=${width}`;
-};
-
-export default function ResponsiveVideoPlayer({
-  videoUrl,
-  poster = '',
-  captionsUrl = '',
-  configUrl = '',
-  className = '',
-  preload = 'metadata',
-  controls = true,
-}) {
-  const videoRef = useRef(null);
-  const containerRef = useRef(null);
-  const [isDirect, setIsDirect] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [autoplay, setAutoplay] = useState(false);
-  const [loop, setLoop] = useState(false);
-  const [fetchedConfig, setFetchedConfig] = useState(null);
-
-  useEffect(() => {
-    setIsDirect(isDirectVideoFile(videoUrl));
-  }, [videoUrl]);
-
-  // Optionally fetch a JSON config at runtime (e.g. from a JSON file you host)
-  useEffect(() => {
-    let mounted = true;
-    if (!configUrl) return;
-    fetch(configUrl)
-      .then((r) => r.json())
-      .then((json) => {
-        if (!mounted) return;
-        setFetchedConfig(json);
-        if (json.autoplay) setAutoplay(Boolean(json.autoplay));
-        if (json.loop) setLoop(Boolean(json.loop));
-        if (typeof json.muted !== 'undefined') setMuted(Boolean(json.muted));
-      })
-      .catch(() => {
-        // ignore errors silently — config is optional
-      });
-    return () => (mounted = false);
-  }, [configUrl]);
-
-  // Playback state synchronization
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
-    v.addEventListener('play', onPlay);
-    v.addEventListener('pause', onPause);
-    return () => {
-      v.removeEventListener('play', onPlay);
-      v.removeEventListener('pause', onPause);
-    };
-  }, []);
-
-  // Controls API
-  const togglePlay = async () => {
-    const v = videoRef.current;
-    if (!v) return;
-    try {
-      if (v.paused) await v.play();
-      else v.pause();
-    } catch (e) {
-      // autoplay policy might block play — ignore
-    }
-  };
-
-  const toggleMute = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = !v.muted;
-    setMuted(v.muted);
-  };
-
-  const enterFullscreen = async () => {
-    const el = containerRef.current;
-    if (!el) return;
-    if (el.requestFullscreen) await el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else if (el.msRequestFullscreen) el.msRequestFullscreen();
-  };
-
-  const requestPIP = async () => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (document.pictureInPictureEnabled && !v.disablePictureInPicture) {
-      try {
-        if (v !== document.pictureInPictureElement) await v.requestPictureInPicture();
-        else await document.exitPictureInPicture();
-      } catch (e) {
-        // ignore
-      }
-    }
-  };
-
-  // Build embed fallback (iframe) — best-effort for Facebook, YouTube and generic.
-  const getIframeSrc = (url) => {
-    if (!url) return '';
-    try {
-      const host = new URL(url).hostname.toLowerCase();
-      if (host.includes('facebook.com')) return makeFacebookEmbed(url, 560);
-      if (host.includes('youtube.com') || host.includes('youtu.be')) {
-        // allow YouTube watch URL or short url — convert to embed
-        // extract video id
-        const idMatch = url.match(/(v=|\/)([A-Za-z0-9_-]{6,})/);
-        const vid = idMatch ? idMatch[2] : null;
-        if (vid) return `https://www.youtube.com/embed/${vid}`;
-      }
-      // generic fallback: just load the page in an iframe (may be blocked by X-Frame-Options)
-      return url;
-    } catch (e) {
-      return url;
-    }
-  };
-
-  return (
-    <div ref={containerRef} className={`video-player-root ${className}`}> 
-      <div className="relative bg-black rounded-2xl overflow-hidden shadow-lg">
-        {/* Native player when direct file */}
-        {isDirect ? (
-          <div className="w-full aspect-video bg-black relative">
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              poster={poster || (fetchedConfig && fetchedConfig.poster) || ''}
-              preload={preload}
-              controls={controls}
-              autoPlay={autoplay}
-              muted={muted}
-              loop={loop}
-              className="w-full h-full object-contain"
-            >
-              {captionsUrl && (
-                <track src={captionsUrl} kind="subtitles" srcLang="en" label="English" default />
-              )}
-              Sorry — your browser does not support the video element.
-            </video>
-
-            {/* custom minimal control bar (overlay) */}
-            <div className="absolute left-3 bottom-3 flex items-center gap-3">
-              <button
-                onClick={togglePlay}
-                className="px-3 py-1 rounded-md bg-black/40 backdrop-blur text-sm"
-                aria-label="Play / Pause"
-              >
-                {isPlaying ? 'Pause' : 'Play'}
-              </button>
-              <button
-                onClick={toggleMute}
-                className="px-3 py-1 rounded-md bg-black/40 text-sm"
-                aria-label="Mute toggle"
-              >
-                {muted ? 'Unmute' : 'Mute'}
-              </button>
-              <button
-                onClick={requestPIP}
-                className="px-3 py-1 rounded-md bg-black/40 text-sm"
-                aria-label="Picture-in-Picture"
-              >
-                PIP
-              </button>
-              <button
-                onClick={enterFullscreen}
-                className="px-3 py-1 rounded-md bg-black/40 text-sm"
-                aria-label="Fullscreen"
-              >
-                Full
-              </button>
-            </div>
-          </div>
-        ) : (
-          // Fallback to iframe embed
-          <div className="w-full aspect-video bg-black flex items-center justify-center">
-            <iframe
-              title="embedded-video"
-              src={getIframeSrc(videoUrl)}
-              allow="autoplay; encrypted-media; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* small meta area */}
-      <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
-        <div>Source: <span className="text-slate-700">{videoUrl}</span></div>
-        <div className="flex items-center gap-2">
-          {configUrl && <div className="px-2 py-1 rounded bg-slate-100 text-xs">Config: {configUrl}</div>}
-          <div className="px-2 py-1 rounded bg-slate-100 text-xs">Direct file: {isDirect ? 'yes' : 'no'}</div>
+<header>
+  <div class="container nav-inner">
+    <div style="display:flex;align-items:center;gap:18px">
+      <div class="logo">Credify</div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="academy.html">Academy</a>
+        <a href="store.html">Store</a>
+        <a href="content.html">Content Hub</a>
+        <a href="services.html">Tech Services</a>
+        <a href="vault.html">Wealth Vault</a>
+      </nav>
+    </div>
+    <div class="nav-right">
+      <a class="btn ghost" id="whatsapp-btn">Join WhatsApp</a>
+      <button class="btn gold" id="create-account">Create Free Account</button>
+    </div>
+  </div>
+</header>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credify — Home</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<!-- include nav partial here -->
+<!-- paste contents of partials/nav.html -->
+<main id="home">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <h1>Learn Digital Skills. Build Income. Master Financial Intelligence.</h1>
+        <p>Premium courses, tools and short lessons designed to turn your talent into revenue.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn gold" href="academy.html">Learn Skills</a>
+          <a class="btn ghost" href="store.html">Start Online Business</a>
+          <a class="btn ghost" href="services.html">Hire Me</a>
+          <a class="btn" style="background:linear-gradient(90deg,var(--gold-1),var(--gold-2));color:#060506" href="vault.html">Join Wealth Vault</a>
         </div>
       </div>
-
+      <aside class="promo-card">
+         <h3>Start with a roadmap</h3>
+         <p>7-step digital income blueprint • Video previews • Templates</p>
+         <div style="margin-top:12px">
+           <a class="btn" href="https://YOUR_GUMROAD_LINK" data-gumroad>Get roadmap</a>
+         </div>
+      </aside>
     </div>
-  );
-}
+  </section>
+
+  <section class="cards">
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px">
+        <div><h2 style="margin:0;font-size:28px">What we offer</h2><p class="muted small" style="margin-top:6px">Focused programs for creators, sellers and builders.</p></div>
+        <div class="small muted">Curated, practical, and ready for revenue</div>
+      </div>
+
+      <div class="cards-grid">
+        <article class="card"><div class="icon">DS</div><h4>Digital Skills</h4><p>Master practical skills—web design, ads, funnels, and content systems that pay.</p><a class="explore" href="academy.html">Explore →</a></article>
+        <article class="card"><div class="icon">OS</div><h4>Online Selling</h4><p>Sell digital products with Gumroad redirect flows—simple and secure.</p><a class="explore" href="store.html">Explore →</a></article>
+        <article class="card"><div class="icon">CC</div><h4>Content Creation</h4><p>Short-form systems and frameworks that convert views into buyers.</p><a class="explore" href="content.html">Explore →</a></article>
+        <article class="card"><div class="icon">WD</div><h4>Web Design</h4><p>Premium landing pages and product showcases—crafted for conversion and trust.</p><a class="explore" href="services.html">Explore →</a></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="proof">
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div><h3 style="margin:0">Results & Client Stories</h3><p class="muted small">Real outcomes from students and clients.</p></div>
+        <div style="display:flex;gap:16px;align-items:center"><img src="https://via.placeholder.com/120x36?text=Logo+1" alt=""><img src="https://via.placeholder.com/120x36?text=Logo+2" alt=""></div>
+      </div>
+
+      <div class="proof-grid">
+        <div class="proof-card"><img src="https://via.placeholder.com/180x120?text=Result" alt=""><div><div class="meta">"I made my first $2,200 in 30 days"</div><div class="muted small">Student case study</div></div></div>
+        <div class="proof-card"><img src="https://via.placeholder.com/180x120?text=Before+After" alt=""><div><div class="meta">Brand refresh — 3x conversions</div><div class="muted small">Client project</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="giant-cta">
+    <div class="container box center">
+      <h2>Start Your Digital Income Journey Today.</h2>
+      <p>Everything you need to learn, launch and scale—no unnecessary fluff.</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:18px">
+        <a class="btn gold" href="https://YOUR_GUMROAD_LINK" data-gumroad>Create Free Account</a>
+        <a class="btn ghost" href="#" id="join-wa">Join WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- include footer partial and app.js -->
+<!-- paste contents of partials/footer.html -->
+</body></html>
+<footer>
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;align-items:center;gap:18px">
+      <div style="font-weight:700">Credify</div>
+      <div class="small muted">© Credify • All rights reserved</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px">
+      <a class="small muted" href="#">Privacy</a>
+      <a class="small muted" href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+<script src="app.js" defer></script>
