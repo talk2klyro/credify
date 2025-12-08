@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credify — Wealth Vault</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============================ NAVIGATION ============================ -->
+<header class="header">
+  <div class="container nav-inner">
+
+    <div class="logo">Credify</div>
+
+    <nav class="nav-links" aria-label="Primary Navigation">
+      <a href="index.html">Home</a>
+      <a href="academy.html">Academy</a>
+      <a href="store.html">Store</a>
+      <a href="content.html">Content Hub</a>
+      <a href="services.html">Tech Services</a>
+      <a href="vault.html" class="active">Wealth Vault</a>
+    </nav>
+
+    <div class="nav-right">
+      <button class="btn ghost" id="whatsapp-btn">Join WhatsApp</button>
+      <button class="btn gold" id="create-account">Create Free Account</button>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="academy.html">Academy</a>
+    <a href="store.html">Store</a>
+    <a href="content.html">Content Hub</a>
+    <a href="services.html">Tech Services</a>
+    <a href="vault.html" class="active">Wealth Vault</a>
+    <hr>
+    <button class="btn gold full">Create Free Account</button>
+    <button class="btn ghost full" id="mobile-wa">Join WhatsApp</button>
+  </div>
+</header>
+
+<!-- ============================ HERO ============================ -->
+<main class="vault-page">
+  <section class="hero">
+    <div class="container">
+      <h1>Wealth Vault</h1>
+      <p>Exclusive lessons, business blueprints, and downloadable tools to accelerate your income.</p>
+    </div>
+  </section>
+
+<!-- ============================ CONTENT ============================ -->
+<section class="vault-content">
+  <div class="container">
+
+    <!-- Non-logged-in view -->
+    <div class="locked-content">
+      <p>Some content is locked. Join now to unlock all premium lessons and tools.</p>
+      <a class="btn gold full" href="https://YOUR_GUMROAD_LINK" target="_blank">Join Now</a>
+      <div class="vault-grid">
+        <div class="vault-card blurred">Lesson 1 Preview</div>
+        <div class="vault-card blurred">Lesson 2 Preview</div>
+        <div class="vault-card blurred">Business Blueprint 1</div>
+        <div class="vault-card blurred">Toolkit Sample</div>
+      </div>
+    </div>
+
+    <!-- Logged-in view -->
+    <!-- 
+    <div class="unlocked-content">
+      <div class="vault-grid">
+        <div class="vault-card">Lesson 1: Digital Skills Deep Dive</div>
+        <div class="vault-card">Lesson 2: Online Selling Framework</div>
+        <div class="vault-card">Blueprint: Content System</div>
+        <div class="vault-card">Toolkit: Templates & Assets</div>
+      </div>
+    </div>
+    -->
+
+  </div>
+</section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-left">
+      <strong>Credify</strong>
+      <span class="small muted">© Credify • All rights reserved</span>
+    </div>
+    <div class="footer-right">
+      <a class="small muted" href="#">Privacy</a>
+      <a class="small muted" href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>
