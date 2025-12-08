@@ -1,46 +1,52 @@
-// app.js — shared behaviors: WhatsApp link, email modal, Gumroad helpers
-(function(){
-  const whatsappBtn = document.getElementById('whatsapp-btn');
-  const createBtn = document.getElementById('create-account');
-  const modal = document.getElementById('email-modal');
-  const cancel = document.getElementById('modal-cancel');
-  const send = document.getElementById('modal-send');
-  const emailInput = document.getElementById('email-input');
+// ============================ HAMBURGER MENU ============================
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
 
-  // Configure these:
-  const WA_NUMBER = 'YOUR_WHATSAPP_NUMBER'; // e.g. 2348012345678
-  const WA_TEXT = encodeURIComponent('Hi! I want to join the Credify WhatsApp channel.');
+hamburger.addEventListener('click', () => {
+  mobileMenu.classList.toggle('active');
+});
 
-  if(whatsappBtn) whatsappBtn.href = `https://wa.me/${WA_NUMBER}?text=${WA_TEXT}`;
-
-  if(createBtn){
-    createBtn.addEventListener('click', ()=> {
-      if(modal){ modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); emailInput.focus(); }
-    });
-  }
-  if(cancel) cancel.addEventListener('click', ()=> { modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); });
-  if(send) send.addEventListener('click', ()=>{
-    const email = emailInput.value.trim();
-    if(!email || !email.includes('@')) return alert('Please enter a valid email');
-    // MVP: use clipboard or show success. Replace with actual mailing list integration later.
-    navigator.clipboard?.writeText(email).catch(()=>{});
-    alert('Thanks — we received your email (MVP placeholder).');
-    modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); emailInput.value='';
+// Optional: close mobile menu when link clicked
+const mobileLinks = mobileMenu.querySelectorAll('a');
+mobileLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.remove('active');
   });
+});
 
-  // Optional: make gumroad links open in new tab
-  document.addEventListener('click', (e)=>{
-    const a = e.target.closest('a[data-gumroad]');
-    if(!a) return;
-    a.target = '_blank';
-    // You can add tracking params here
-  });
+// ============================ CONTENT HUB TABS ============================
+const tabs = document.querySelectorAll('.tab');
+const contentGrid = document.querySelector('.content-grid');
 
-  // Simple fade-in for cards (progressive)
-  document.addEventListener('DOMContentLoaded', ()=>{
-    document.querySelectorAll('.card, .proof-card, .promo-card').forEach((el,i)=>{
-      el.style.opacity = 0; el.style.transform = 'translateY(18px)';
-      setTimeout(()=>{ el.style.transition = 'opacity .6s ease, transform .6s ease'; el.style.opacity = 1; el.style.transform = 'translateY(0)'; }, 90*i);
+if (tabs && contentGrid) {
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // remove active class from all tabs
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const type = tab.dataset.tab; // e.g., "articles", "shorts", etc.
+      
+      // show/hide content cards based on data-type
+      const cards = contentGrid.querySelectorAll('.content-card');
+      cards.forEach(card => {
+        if (type === 'all' || card.dataset.type === type) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
     });
   });
-})();
+}
+
+// ============================ SMOOTH SCROLL (OPTIONAL) ====================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
