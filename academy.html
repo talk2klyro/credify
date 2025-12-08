@@ -1,31 +1,147 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Credify — Academy</title>
 <link rel="stylesheet" href="styles.css">
-</head><body>
-<!-- nav partial -->
-<main>
-  <section style="padding:80px 0" class="container">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <div><h1 style="margin:0">Learn Digital Skills & Financial Intelligence</h1><p class="muted small">Search, filter and pick a course</p></div>
-      <div><input placeholder="Search courses" style="padding:10px 12px;border-radius:10px;border:1px solid #eee"></div>
+</head>
+<body>
+
+<!-- ============================ NAVIGATION ============================ -->
+<header class="header">
+  <div class="container nav-inner">
+
+    <div class="logo">Credify</div>
+
+    <nav class="nav-links" aria-label="Primary Navigation">
+      <a href="index.html">Home</a>
+      <a href="academy.html" class="active">Academy</a>
+      <a href="store.html">Store</a>
+      <a href="content.html">Content Hub</a>
+      <a href="services.html">Tech Services</a>
+      <a href="vault.html">Wealth Vault</a>
+    </nav>
+
+    <div class="nav-right">
+      <button class="btn ghost" id="whatsapp-btn">Join WhatsApp</button>
+      <button class="btn gold" id="create-account">Create Free Account</button>
     </div>
 
-    <div class="cards-grid">
-      <!-- Course card (repeat) -->
-      <article class="card">
-        <img src="https://via.placeholder.com/400x220?text=Course+1" alt="" style="border-radius:10px;margin-bottom:12px">
-        <h4>Course Title — Web Design Essentials</h4>
-        <p class="muted small">Short course description that converts curiosity into action.</p>
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <a class="btn ghost" href="course.html">Learn More</a>
-          <a class="btn gold" href="https://YOUR_GUMROAD_LINK" data-gumroad>Buy Now</a>
-        </div>
-      </article>
+    <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+      <span></span><span></span><span></span>
+    </button>
 
-      <!-- duplicate above card for more courses -->
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="academy.html" class="active">Academy</a>
+    <a href="store.html">Store</a>
+    <a href="content.html">Content Hub</a>
+    <a href="services.html">Tech Services</a>
+    <a href="vault.html">Wealth Vault</a>
+    <hr>
+    <button class="btn gold full">Create Free Account</button>
+    <button class="btn ghost full" id="mobile-wa">Join WhatsApp</button>
+  </div>
+</header>
+
+<!-- ============================ ACADEMY HERO ============================ -->
+<main class="academy-page">
+  <section class="hero">
+    <div class="container">
+      <h1>Learn Digital Skills & Financial Intelligence</h1>
+      <p>Explore our curated courses and start building income today.</p>
+
+      <div class="search-filters">
+        <input type="text" placeholder="Search courses..." id="course-search">
+        <select id="category-filter">
+          <option value="">All Categories</option>
+          <option value="digital-skills">Digital Skills</option>
+          <option value="online-selling">Online Selling</option>
+          <option value="content-creation">Content Creation</option>
+        </select>
+        <select id="price-filter">
+          <option value="">All Prices</option>
+          <option value="free">Free</option>
+          <option value="paid">Paid</option>
+        </select>
+        <select id="level-filter">
+          <option value="">All Levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ COURSE GRID ============================ -->
+  <section class="courses">
+    <div class="container">
+      <div class="courses-grid">
+
+        <!-- Example Course Card -->
+        <article class="course-card">
+          <img src="https://via.placeholder.com/360x200?text=Course+1" alt="Course 1 Thumbnail">
+          <h3>Web Design Mastery</h3>
+          <p>Learn how to design premium websites that convert visitors into paying clients.</p>
+          <div class="course-meta">
+            <span class="price">$49</span>
+          </div>
+          <div class="course-actions">
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Learn More</a>
+            <a class="btn gold" href="https://YOUR_GUMROAD_LINK" target="_blank">Buy Now</a>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <img src="https://via.placeholder.com/360x200?text=Course+2" alt="Course 2 Thumbnail">
+          <h3>Content Creation Secrets</h3>
+          <p>Create viral short-form content that converts viewers into customers.</p>
+          <div class="course-meta">
+            <span class="price">$29</span>
+          </div>
+          <div class="course-actions">
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Learn More</a>
+            <a class="btn gold" href="https://YOUR_GUMROAD_LINK" target="_blank">Buy Now</a>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <img src="https://via.placeholder.com/360x200?text=Course+3" alt="Course 3 Thumbnail">
+          <h3>Online Selling Simplified</h3>
+          <p>Launch and sell digital products easily using Gumroad redirects and workflows.</p>
+          <div class="course-meta">
+            <span class="price">$39</span>
+          </div>
+          <div class="course-actions">
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Learn More</a>
+            <a class="btn gold" href="https://YOUR_GUMROAD_LINK" target="_blank">Buy Now</a>
+          </div>
+        </article>
+
+        <!-- Add more courses similarly -->
+      </div>
     </div>
   </section>
 </main>
-<!-- footer + app.js -->
-</body></html>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-left">
+      <strong>Credify</strong>
+      <span class="small muted">© Credify • All rights reserved</span>
+    </div>
+    <div class="footer-right">
+      <a class="small muted" href="#">Privacy</a>
+      <a class="small muted" href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>
