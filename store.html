@@ -1,28 +1,127 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Store — Credify</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credify — Store</title>
 <link rel="stylesheet" href="styles.css">
-</head><body>
-<!-- nav -->
-<main>
-  <section style="padding:80px 0" class="container">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <div><h1 style="margin:0">Store</h1><p class="muted small">Tools, templates and toolkits</p></div>
+</head>
+<body>
+
+<!-- ============================ NAVIGATION ============================ -->
+<header class="header">
+  <div class="container nav-inner">
+
+    <div class="logo">Credify</div>
+
+    <nav class="nav-links" aria-label="Primary Navigation">
+      <a href="index.html">Home</a>
+      <a href="academy.html">Academy</a>
+      <a href="store.html" class="active">Store</a>
+      <a href="content.html">Content Hub</a>
+      <a href="services.html">Tech Services</a>
+      <a href="vault.html">Wealth Vault</a>
+    </nav>
+
+    <div class="nav-right">
+      <button class="btn ghost" id="whatsapp-btn">Join WhatsApp</button>
+      <button class="btn gold" id="create-account">Create Free Account</button>
     </div>
 
-    <div class="cards-grid">
-      <article class="card">
-        <img src="https://via.placeholder.com/400x220?text=Product+1" alt="" style="border-radius:10px;margin-bottom:12px">
-        <h4>Toolkit — Landing Page Kit</h4>
-        <p class="muted small">A complete landing page template for selling courses.</p>
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <a class="btn ghost" href="product.html">Read More</a>
-          <a class="btn gold" href="https://YOUR_GUMROAD_LINK" data-gumroad>Buy on Gumroad</a>
-        </div>
-      </article>
-      <!-- Repeat product cards -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="academy.html">Academy</a>
+    <a href="store.html" class="active">Store</a>
+    <a href="content.html">Content Hub</a>
+    <a href="services.html">Tech Services</a>
+    <a href="vault.html">Wealth Vault</a>
+    <hr>
+    <button class="btn gold full">Create Free Account</button>
+    <button class="btn ghost full" id="mobile-wa">Join WhatsApp</button>
+  </div>
+</header>
+
+<!-- ============================ STORE HERO ============================ -->
+<main class="store-page">
+  <section class="hero">
+    <div class="container">
+      <h1>Digital Products & Toolkits</h1>
+      <p>High-quality resources designed to help you sell, create, and grow your online business.</p>
+    </div>
+  </section>
+
+<!-- ============================ PRODUCT GRID ============================ -->
+  <section class="products">
+    <div class="container">
+      <div class="products-grid">
+
+        <!-- Example Product Card -->
+        <article class="product-card">
+          <img src="https://via.placeholder.com/360x220?text=Product+1" alt="Product 1">
+          <h3>Ultimate Content Toolkit</h3>
+          <p>All the templates, checklists, and guides you need to create viral content quickly.</p>
+          <div class="product-meta">
+            <span class="price">$29</span>
+          </div>
+          <div class="product-actions">
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Read More</a>
+            <a class="btn gold" href="https://YOUR_GUMROAD_LINK" target="_blank">Add to Cart</a>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <img src="https://via.placeholder.com/360x220?text=Product+2" alt="Product 2">
+          <h3>Web Design Starter Kit</h3>
+          <p>Pre-made landing pages, templates, and assets to launch your first website fast.</p>
+          <div class="product-meta">
+            <span class="price">$49</span>
+          </div>
+          <div class="product-actions">
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Read More</a>
+            <a class="btn gold" href="https://YOUR_GUMROAD_LINK" target="_blank">Add to Cart</a>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <img src="https://via.placeholder.com/360x220?text=Product+3" alt="Product 3">
+          <h3>Online Business Blueprint</h3>
+          <p>A step-by-step guide for starting and scaling your digital business in 30 days.</p>
+          <div class="product-meta">
+            <span class="price">$39</span>
+          </div>
+          <div class="product-actions">
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Read More</a>
+            <a class="btn gold" href="https://YOUR_GUMROAD_LINK" target="_blank">Add to Cart</a>
+          </div>
+        </article>
+
+        <!-- Add more products similarly -->
+
+      </div>
     </div>
   </section>
 </main>
-<!-- footer + app.js -->
-</body></html>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-left">
+      <strong>Credify</strong>
+      <span class="small muted">© Credify • All rights reserved</span>
+    </div>
+    <div class="footer-right">
+      <a class="small muted" href="#">Privacy</a>
+      <a class="small muted" href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>
