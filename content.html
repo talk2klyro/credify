@@ -1,26 +1,142 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Content Hub — Credify</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credify — Content Hub</title>
 <link rel="stylesheet" href="styles.css">
-</head><body>
-<!-- nav -->
-<main>
-  <section style="padding:72px 0" class="container">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <h1 style="margin:0">Content Hub</h1>
-      <div class="small muted">Articles • Shorts • Insights</div>
+</head>
+<body>
+
+<!-- ============================ NAVIGATION ============================ -->
+<header class="header">
+  <div class="container nav-inner">
+
+    <div class="logo">Credify</div>
+
+    <nav class="nav-links" aria-label="Primary Navigation">
+      <a href="index.html">Home</a>
+      <a href="academy.html">Academy</a>
+      <a href="store.html">Store</a>
+      <a href="content.html" class="active">Content Hub</a>
+      <a href="services.html">Tech Services</a>
+      <a href="vault.html">Wealth Vault</a>
+    </nav>
+
+    <div class="nav-right">
+      <button class="btn ghost" id="whatsapp-btn">Join WhatsApp</button>
+      <button class="btn gold" id="create-account">Create Free Account</button>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
-      <article class="card">
-        <img src="https://via.placeholder.com/400x220?text=Article+1" alt="" style="border-radius:10px;margin-bottom:12px">
-        <h4>How to start selling digital products</h4>
-        <p class="muted small">A short primer — practical steps to launch on Gumroad.</p>
-        <a class="btn ghost" href="article.html">Read / Watch more</a>
-      </article>
-      <!-- Repeat -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="academy.html">Academy</a>
+    <a href="store.html">Store</a>
+    <a href="content.html" class="active">Content Hub</a>
+    <a href="services.html">Tech Services</a>
+    <a href="vault.html">Wealth Vault</a>
+    <hr>
+    <button class="btn gold full">Create Free Account</button>
+    <button class="btn ghost full" id="mobile-wa">Join WhatsApp</button>
+  </div>
+</header>
+
+<!-- ============================ HERO ============================ -->
+<main class="content-page">
+  <section class="hero">
+    <div class="container">
+      <h1>Content Hub</h1>
+      <p>Insights, articles, and short lessons to help you grow your skills and income.</p>
+
+      <!-- Tabs / Filters -->
+      <div class="content-tabs">
+        <button class="tab active" data-tab="articles">Articles</button>
+        <button class="tab" data-tab="shorts">Short Videos</button>
+        <button class="tab" data-tab="insights">Insights</button>
+        <button class="tab" data-tab="money">Money Lessons</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CONTENT GRID ============================ -->
+  <section class="content-grid-section">
+    <div class="container grid-layout">
+
+      <!-- Main Content Grid -->
+      <div class="content-main">
+        <div class="content-grid">
+
+          <article class="content-card">
+            <img src="https://via.placeholder.com/360x200?text=Article+1" alt="Article 1">
+            <h3>5 Steps to Launch Your Online Business</h3>
+            <p>Learn how to go from zero to your first sale in just a few weeks.</p>
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Read More</a>
+          </article>
+
+          <article class="content-card">
+            <img src="https://via.placeholder.com/360x200?text=Short+1" alt="Short Video 1">
+            <h3>How to Create Viral Shorts</h3>
+            <p>Simple strategies to turn short-form content into money-making videos.</p>
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Watch More</a>
+          </article>
+
+          <article class="content-card">
+            <img src="https://via.placeholder.com/360x200?text=Insight+1" alt="Insight 1">
+            <h3>Top 3 Digital Skills for 2025</h3>
+            <p>Skills that will give you the highest ROI and fastest income growth.</p>
+            <a class="btn ghost" href="https://YOUR_GUMROAD_LINK" target="_blank">Read More</a>
+          </article>
+
+          <!-- Add more cards similarly -->
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="content-sidebar">
+        <div class="sidebar-section">
+          <h4>Related Courses</h4>
+          <ul>
+            <li><a href="academy.html">Web Design Mastery</a></li>
+            <li><a href="academy.html">Content Creation Secrets</a></li>
+            <li><a href="academy.html">Online Selling Simplified</a></li>
+          </ul>
+        </div>
+
+        <div class="sidebar-section">
+          <h4>Buy This Toolkit</h4>
+          <a class="btn gold full" href="https://YOUR_GUMROAD_LINK" target="_blank">Get Toolkit</a>
+        </div>
+
+        <div class="sidebar-section">
+          <h4>Join Membership</h4>
+          <a class="btn ghost full" href="vault.html">Unlock Wealth Vault</a>
+        </div>
+      </aside>
+
     </div>
   </section>
 </main>
-<!-- footer + app.js -->
-</body></html>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-left">
+      <strong>Credify</strong>
+      <span class="small muted">© Credify • All rights reserved</span>
+    </div>
+    <div class="footer-right">
+      <a class="small muted" href="#">Privacy</a>
+      <a class="small muted" href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>
